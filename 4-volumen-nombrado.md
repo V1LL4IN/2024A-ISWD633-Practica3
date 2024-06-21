@@ -8,7 +8,9 @@ docker volume create <nombre volumen>
 ```
 
 ### Crear el volumen nombrado: vol-postgres
-# COMPLETAR CON EL COMANDO
+```
+docker volume inspect vol-postgres
+```
 
 ## MOUNTPOINT
 Un mountpoint se refiere al lugar en el sistema de archivos donde un dispositivo de almacenamiento se une (o monta) al sistema de archivos. Es el punto donde los archivos y directorios almacenados en ese dispositivo de almacenamiento son accesibles para el sistema operativo y las aplicaciones.
@@ -18,7 +20,8 @@ Por ejemplo, en Windows las unidades de almacenamiento (como `C:`, `D:`, etc.) a
 Cuando creas un volumen nombrado, Docker asigna un punto de montaje específico en el sistema de archivos del host para ese volumen.
 
 ### ¿Cuál es el Mountpoint de vol-postgres?
-# COMPLETAR CON LA RESPUESTA A LA PREGUNTA
+
+/var/lib/docker/volumes/vol-postgres/_data
 
 ### Estructura del Punto de Montaje:
 - /var/lib/docker/volumes/: Es la ubicación base donde Docker almacena todos los volúmenes en el sistema de archivos del host.
@@ -35,11 +38,20 @@ docker run -d --name <nombre contenedor> -v <nombre volumen>:<ruta contenedor> <
 ```
 
 ### Crear la red net-drupal de tipo bridge
-# COMPLETAR CON EL COMANDO
+```
+docker network create net-drupal
+```
 
 ### Crear un servidor postgres vinculado a la red net-drupal, completar la ruta del contenedor
 ```
-docker run -d --name server-postgres -e POSTGRES_DB=db_drupal -e POSTGRES_PASSWORD=12345 -e POSTGRES_USER=user_drupal --network net-drupal postgres
+docker run -d --name server-postgres \
+    -e POSTGRES_DB=db_drupal \
+    -e POSTGRES_PASSWORD=12345 \
+    -e POSTGRES_USER=user_drupal \
+    --network net-drupal \
+    -v vol-postgres:/var/lib/postgresql/data \
+    postgres
+
 ```
 _No es necesario exponer el puerto, debido a que nos vamos a conectar desde la misma red de docker_
 
@@ -51,19 +63,62 @@ docker run -d --name client-postgres --publish published=9500,target=80 -e PGADM
 ### Usar el cliente postgres para conectarse al servidor postgres, para la conexión usar el nombre del servidor en lugar de la dirección IP.
 
 ### Crear los volúmenes necesarios para drupal, esto se puede encontrar en la documentación
-### COMPLETAR CON LOS COMANDOS
+```
+docker volume create vol-drupal-data
+docker volume create vol-drupal-modules
+docker volume create vol-drupal-themes
+docker volume create vol-drupal-profiles
+```
 
 ### Crear el contenedor server-drupal vinculado a la red, usar la imagen drupal, y vincularlo a los volúmenes nombrados
 ```
-docker run -d --name server-drupal --publish published=9700,target=80 -v <nombre volumen>:<ruta contenedor> -v <nombre volumen>:<ruta contenedor> -v <nombre volumen>:<ruta contenedor> -v <nombre volumen>:<ruta contenedor> --network net-drupal drupal
+docker run -d --name server-drupal \
+    --publish published=9700,target=80 \
+    -v vol-drupal-data:/var/www/html/sites/default/files \
+    -v vol-drupal-modules:/var/www/html/modules \
+    -v vol-drupal-themes:/var/www/html/themes \
+    -v vol-drupal-profiles:/var/www/html/profiles \
+    --network net-drupal \
+    drupal
 ```
 
 ### Ingrese al server-drupal y siga el paso a paso para la instalación.
 # COMPLETAR CON UNA CAPTURA DE PANTALLA DEL PASO 4
 
+<img width="1107" alt="image" src="https://github.com/V1LL4IN/2024A-ISWD633-Practica3/assets/135792941/e88f8dad-f5c0-4a96-9174-2e465d255f99">
+
+
 _La instalación puede tomar varios minutos, mientras espera realice un diagrama de los contenedores que ha creado en este apartado._
 
 # COMPLETAR CON EL DIAGRAMA SOLICITADO
+
+          +--------------------+              +-------------------+
+          |    net-drupal      |              |    net-drupal     |
+          |                    |              |                   |
+          |  +----------------+|              |  +---------------+|
+          |  | server-postgres |              |  | client-postgres||
+          |  |   (PostgreSQL)  |              |  |   (pgAdmin)    ||
+          |  +----------------+|              |  +---------------+|
+          |                    |              |                   |
+          +--------------------+              +-------------------+
+
+          +--------------------+              +--------------------+
+          |    net-drupal      |              |    net-drupal      |
+          |                    |              |                    |
+          |  +---------------+ |              |  +---------------+ |
+          |  | server-drupal  | |              |  | vol-postgres  | |
+          |  |   (Drupal)     | |              |  +---------------+ |
+          |  +---------------+ |              +--------------------+
+          |                    |
+          +--------------------+
+
+          +--------------------+
+          |    vol-drupal-data |
+          |    vol-drupal-modules |
+          |    vol-drupal-themes |
+          |    vol-drupal-profiles |
+          +--------------------+
+
 
 ### Eliminar un volumen específico
 ```
