@@ -9,24 +9,32 @@ docker run -d --name <nombre contenedor> -v <ruta carpeta host>:<ruta carpeta co
 ![Volúmenes](imagenes/volumen-host.PNG)
 # COMPLETAR CON EL COMANDO
 
+```
+docker run -d --name nginx-container -v $(pwd)/html:/usr/share/nginx/html nginx:alpine
+```
+
 ### ¿Qué sucede al ingresar al servidor de nginx?
-# COMPLETAR CON LA RESPUESTA A LA PREGUNTA
+Nginx mostrará los archivos y páginas que se encuentren dentro de la carpeta html de tu sistema de archivos local.
 
 ### ¿Qué pasa con el archivo index.html del contenedor?
-# COMPLETAR CON LA RESPUESTA A LA PREGUNTA
+El archivo index.html que originalmente viene con la imagen nginx:alpine en la ruta /usr/share/nginx/html es sobrescrito por el contenido de la carpeta html de tu máquina. 
 
 ### Ir a https://html5up.net/ y descargar un template gratuito, descomprirlo dentro de nginx/html
 ### ¿Qué sucede al ingresar al servidor de nginx?
-# COMPLETAR CON LA RESPUESTA A LA PREGUNTA
+Al ingresar al servidor de nginx después de descomprimir el template en la carpeta html, se observa el nuevo contenido del template HTML descargado en la máquina.
 
 ### Eliminar el contenedor
-# COMPLETAR CON EL COMANDO
+```
+docker rm -f nginx-container
+```
 
 ### ¿Qué sucede al crear nuevamente el mismo contenedor con volumen de tipo host a los directorios definidos anteriormente?
-# COMPLETAR CON LA RESPUESTA A LA PREGUNTA
+El contenedor nuevo servirá el mismo contenido que estaba en tu carpeta local antes de eliminar el contenedor anterior.
 
 ### ¿Qué hace el comando pwd?
-# COMPLETAR CON LA RESPUESTA A LA PREGUNTA
+Muestra la ruta absoluta del directorio actual en el que te encuentras en el sistema de archivos.
+
+
 Si quieres incluir el comando pwd dentro de un comando de Docker, lo puedes hacer de diferentes maneras dependiendo del shell que estés utilizando.
 
 
